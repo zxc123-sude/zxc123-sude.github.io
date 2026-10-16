@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light">
-  <meta name="description" content="zxc123-sude 的个人技术作品集，关注相机 ISP 与自动白平衡 AWB，记录算法实现、实验方法和成像观察。">
+  <meta name="description" content="zxc123-sude 的个人技术作品集，关注相机 ISP、AI AWB 与学习式光源估计，记录模型训练框架、经典基线和评测方法。">
   <meta name="theme-color" content="#f7f7f2">
-  <title>zxc123-sude · AWB & Imaging</title>
+  <title>zxc123-sude · AI AWB & Imaging</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
   <script src="app.js" defer></script>
@@ -21,16 +21,16 @@
   <main id="main">
     <section class="hero wrap" aria-labelledby="hero-title">
       <div class="hero-copy">
-        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> CAMERA ISP · AUTOMATIC WHITE BALANCE</p>
-        <h1 id="hero-title">让色彩，<br>回到真实<span class="blue-dot">。</span></h1>
-        <p class="hero-description">关注相机 ISP 与自动白平衡（AWB）。<br>从光源估计到色彩还原，用代码理解成像，<br class="desktop-break">也把每一次验证记录下来。</p>
+        <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> CAMERA ISP · LEARNING-BASED AWB</p>
+        <h1 id="hero-title">用 AI，<br>还原色彩<span class="blue-dot">。</span></h1>
+        <p class="hero-description">关注相机 ISP 与 AI 自动白平衡（AWB）。<br>从轻量神经网络的光源估计出发，<br class="desktop-break">已完成真实缩略图 pilot，继续验证泛化。</p>
         <div class="hero-actions"><a class="button primary" href="#work">探索 AWB-Lab <span aria-hidden="true">↗</span></a><a class="text-link" href="https://github.com/zxc123-sude" target="_blank" rel="noopener noreferrer">访问 GitHub <span aria-hidden="true">↗</span></a></div>
         <div class="skills" aria-label="已有基础"><span>Python</span><span>C++</span><span>ISP</span><span class="skills-caption">持续构建中</span></div>
-        <p class="hero-footnote"><span aria-hidden="true">↳</span> 先理解假设，再验证结果。</p>
+        <p class="hero-footnote"><span aria-hidden="true">↳</span> 从经典基线，走向学习式光源估计。</p>
       </div>
 
       <div class="lab-widget" id="demo" aria-labelledby="demo-title">
-        <div class="lab-widget-heading"><div><p class="micro-label">A SMALL COLOR EXPERIMENT</p><h2 id="demo-title">看见白平衡的变化</h2></div><span class="live-badge"><span aria-hidden="true"></span> LOCAL DEMO</span></div>
+        <div class="lab-widget-heading"><div><p class="micro-label">CLASSICAL AWB / BASELINE DEMO</p><h2 id="demo-title">经典算法对照演示</h2></div><span class="live-badge"><span aria-hidden="true"></span> LOCAL DEMO</span></div>
         <div class="comparison" id="comparison">
           <canvas id="before-canvas" width="960" height="720" aria-label="带有色偏的合成场景"></canvas>
           <div class="after-layer" id="after-layer"><canvas id="after-canvas" width="960" height="720" aria-label="经过自动白平衡校正的场景"></canvas></div>
@@ -41,31 +41,32 @@
           <span class="canvas-note" id="canvas-note">合成演示 · 暖光色偏</span>
         </div>
         <div class="demo-controls">
-          <fieldset class="algorithm-fieldset"><legend>选择算法</legend><div class="algorithm-options"><label><input type="radio" name="algorithm" value="gray-world" checked><span>Gray World</span></label><label><input type="radio" name="algorithm" value="max-rgb"><span>Max RGB</span></label><label><input type="radio" name="algorithm" value="shades-of-gray"><span>Shades of Gray</span></label></div></fieldset>
+          <fieldset class="algorithm-fieldset"><legend>选择经典算法</legend><div class="algorithm-options"><label><input type="radio" name="algorithm" value="gray-world" checked><span>Gray World</span></label><label><input type="radio" name="algorithm" value="max-rgb"><span>Max RGB</span></label><label><input type="radio" name="algorithm" value="shades-of-gray"><span>Shades of Gray</span></label></div></fieldset>
           <div class="gain-row"><span class="micro-label">RGB GAIN</span><output id="gain-output" class="gains" aria-live="polite"><span><i class="red-dot"></i> R <b>—</b></span><span><i class="green-dot"></i> G <b>1.000</b></span><span><i class="blue-dot-small"></i> B <b>—</b></span></output></div>
           <div class="demo-toolbar"><label class="scene-label" for="scene-select">场景 <select id="scene-select"><option value="warm">暖光色偏</option><option value="cool">冷光色偏</option><option value="green">偏绿色光</option></select></label><div class="upload-actions"><button class="reset-button" id="reset-demo" type="button" hidden>恢复合成场景</button><label class="upload-button" for="image-upload"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 16V3m-5 5 5-5 5 5M4 15v6h16v-6"/></svg>试试自己的图片</label><input class="visually-hidden" id="image-upload" type="file" accept="image/jpeg,image/png,image/webp"></div></div>
           <p class="demo-note" id="demo-status" role="status">合成演示，非真实数据集评测。拖动分界线对比效果。</p>
-          <p class="privacy-note">图片仅在你的浏览器内处理，不上传。支持 JPG / PNG / WebP。</p>
+          <p class="privacy-note">此处运行经典算法，不调用 AI 模型。图片仅本地处理，不上传。</p>
         </div>
       </div>
     </section>
 
-    <div class="section-divider wrap"><span>从一个能运行的实验开始</span><span aria-hidden="true">SCROLL TO EXPLORE ↓</span></div>
+    <div class="section-divider wrap"><span>从光源估计，到可训练的 AI AWB</span><span aria-hidden="true">SCROLL TO EXPLORE ↓</span></div>
 
     <section id="work" class="project-section wrap" aria-labelledby="project-title">
       <div class="section-heading"><p class="eyebrow">01 / SELECTED WORK</p><span class="section-counter">一个问题，逐步深入。</span></div>
-      <div class="project-intro"><div><div class="project-title-row"><h2 id="project-title">AWB-Lab<span class="title-period">.</span></h2><span class="project-status">初版 / 经典算法与评测</span></div><p class="project-subtitle">自动白平衡算法实验室</p></div><p class="project-summary">从经典统计方法入手，建立可解释、可复现的 AWB 实验流程。先看清每个方法为什么有效，也看清它什么时候会失效。</p></div>
+      <div class="project-intro"><div><div class="project-title-row"><h2 id="project-title">AWB-Lab<span class="title-period">.</span></h2><span class="project-status">真实缩略图 pilot 已完成</span></div><p class="project-subtitle">AI AWB / 学习式光源估计</p></div><p class="project-summary">以轻量 CNN 估计光源颜色，建立从训练到经典基线对比的实验框架。已完成 FFCC 32 × 48 缩略图的单次划分 pilot；完整 RAW 与服务器实验仍待开展。</p></div>
       <div class="project-features">
-        <article><span class="feature-number">01</span><h3>算法实现</h3><p>Python 仓库实现 Gray World、Max RGB、Shades of Gray 和 Gray Edge，统一估计与校正接口。浏览器演示前三种统计方法。</p><span class="feature-tag">CLASSICAL METHODS</span></article>
-        <article><span class="feature-number">02</span><h3>可视化与评测</h3><p>并排观察校正效果与 RGB 增益。评测代码支持光源角误差，真实结论需要有标注的数据与规范预处理。</p><span class="feature-tag">REPRODUCIBLE WORKFLOW</span></article>
-        <article><span class="feature-number">03</span><h3>失败场景分析</h3><p>围绕单色占优、饱和像素和混合光源，分析统计假设的边界。让失败样例成为下一步改进的依据。</p><span class="feature-tag">UNDERSTAND THE LIMITS</span></article>
+        <article><span class="feature-number">01</span><h3>学习式光源估计</h3><p>PyTorch TinyIlluminantNet 接收线性 camera RGB 与有效像素 mask，通过局部光源和置信度汇聚，输出归一化 RGB 光源。</p><span class="feature-tag">LIGHTWEIGHT CNN</span></article>
+        <article><span class="feature-number">02</span><h3>训练与划分边界</h3><p>框架提供按组划分接口与 cosine 损失。本次 pilot 使用单次 fold 划分；缺少 scene_id，尚不能核查跨组重复场景。</p><span class="feature-tag">EXPLICIT DATA PROTOCOL</span></article>
+        <article><span class="feature-number">03</span><h3>与经典基线同台评测</h3><p>已与 Gray World、Max RGB、Shades of Gray 和 Gray Edge 在同批次、相同协议下评测，保留逐图误差与长尾统计。</p><span class="feature-tag">FOUR CLASSICAL BASELINES</span></article>
       </div>
-      <div class="pipeline-panel"><div class="pipeline-caption"><span class="micro-label">INSIDE THE BROWSER DEMO</span><h3>颜色校正，<br>从线性空间开始。</h3><p>先解码 sRGB，再统计光源。<br>增益以绿色通道归一，输出前裁剪并编码。</p></div><div class="pipeline" aria-label="演示处理流程"><div><span>01 / INPUT</span><strong>sRGB 图像</strong><small>屏幕图像输入</small></div><i aria-hidden="true">→</i><div><span>02 / DECODE</span><strong>线性 RGB</strong><small>反向传递函数</small></div><i aria-hidden="true">→</i><div><span>03 / ESTIMATE</span><strong>光源 → 增益</strong><small>G = 1.000</small></div><i aria-hidden="true">→</i><div><span>04 / OUTPUT</span><strong>校正结果</strong><small>裁剪 · sRGB 编码</small></div></div></div>
-      <div class="project-bottom"><p><span class="status-dot" aria-hidden="true"></span> 首个项目正在建立；尚无真实数据集基准成绩。</p><a class="text-link" href="https://github.com/zxc123-sude/awb-lab" target="_blank" rel="noopener noreferrer">查看源码与评测协议 <span aria-hidden="true">↗</span></a></div>
+      <div class="pipeline-panel ai-model-panel"><div class="pipeline-caption"><span class="micro-label">TINYILLUMINANTNET / MODEL DESIGN</span><h3>从数据中，<br>学习光源颜色。</h3><p>PyTorch · 已完成真实缩略图 pilot<br>完整 RAW / 服务器实验待做。</p></div><div class="pipeline ai-pipeline" aria-label="AI 模型流程：线性 camera RGB 与有效像素 mask 输入轻量 CNN，估计局部正 RGB 光源与置信度，汇聚为归一化全局光源，再计算绿色归一增益"><div><span>01 / INPUT</span><strong>线性 RGB</strong><small>camera RGB + mask</small></div><div><span>02 / LEARN</span><strong>轻量 CNN</strong><small>4 通道 · 3 层卷积</small></div><div><span>03 / LOCAL</span><strong>局部估计</strong><small>正 RGB + 置信度</small></div><div><span>04 / POOL</span><strong>全局光源</strong><small>置信度加权汇聚</small></div><div><span>05 / CORRECT</span><strong>RGB 增益</strong><small>绿色归一 · G = 1</small></div></div></div>
+      <aside class="pilot-results" aria-labelledby="pilot-title"><div class="pilot-overview"><p class="micro-label">REAL THUMBNAIL PILOT / RECOVERY ANGULAR ERROR</p><h3 id="pilot-title">让真实结果，说清进展。</h3><p>FFCC · 32 × 48 缩略图 · 188 张测试图</p></div><div class="pilot-metric"><span>TinyIlluminantNet <small>AI</small></span><strong>4.09<small>°</small></strong><p>平均角误差</p></div><div class="pilot-metric"><span>Shades of Gray <small>经典</small></span><strong>3.96<small>°</small></strong><p>平均角误差</p></div><p class="pilot-limit">AI 尚未全面优于传统方法。训练 / 验证 / 测试为 189 / 191 / 188 张；20 epochs，仅按验证集选择第 18 epoch。本次为单次 fold 划分，无 scene_id，不是完整论文 3-fold 或全分辨率 RAW 评测。</p><a class="text-link pilot-report" href="https://github.com/zxc123-sude/awb-lab/blob/main/reports/ffcc_pilot/README.md" target="_blank" rel="noopener noreferrer">查看完整 pilot 报告 <span aria-hidden="true">↗</span></a></aside>
+      <div class="project-bottom"><p><span class="status-dot" aria-hidden="true"></span> 真实缩略图 pilot 已完成；完整 RAW 与服务器实验待开展。</p><a class="text-link" href="https://github.com/zxc123-sude/awb-lab/blob/main/docs/AI_AWB.md" target="_blank" rel="noopener noreferrer">查看 AI 模型与训练协议 <span aria-hidden="true">↗</span></a></div>
     </section>
 
     <section id="methods" class="methods-section" aria-labelledby="methods-title"><div class="wrap">
-      <div class="section-heading"><p class="eyebrow">02 / ALGORITHM NOTES</p><span class="section-counter">没有一种假设适合所有光。</span></div>
+      <div class="section-heading"><p class="eyebrow">02 / CLASSICAL BASELINES</p><span class="section-counter">理解基线，才能判断改进。</span></div>
       <div class="notes-title"><h2 id="methods-title">同一束光，<br>三种理解方式。</h2><p>白平衡不仅是“把画面调白”。<br>每一种统计方法，都在对场景做一个假设。</p></div>
       <div class="methods-table" role="table" aria-label="三种自动白平衡方法对比">
         <div class="method-table-head" role="row"><span role="columnheader">方法 / METHOD</span><span role="columnheader">核心假设</span><span role="columnheader">需要留意</span></div>
@@ -73,13 +74,13 @@
         <div class="method-row" role="row"><div role="cell"><span class="method-symbol max-symbol" aria-hidden="true"></span><strong>Max RGB</strong><small>通道最大值</small></div><p role="cell">各通道最亮的响应，能近似反映光源颜色。</p><p role="cell">高光、饱和与噪声可能主导通道最大值。</p></div>
         <div class="method-row" role="row"><div role="cell"><span class="method-symbol shades-symbol" aria-hidden="true"></span><strong>Shades of Gray</strong><small>Minkowski 范数 · p = 6</small></div><p role="cell">用高阶统计，在平均响应与最大响应之间折中。</p><p role="cell">对参数与图像内容敏感，混合光源仍是挑战。</p></div>
       </div>
-      <p class="method-footnote">上方演示仅用于理解算法行为。屏幕图像的线性化不能替代 RAW 黑电平处理、色彩管理或带光源标注的规范评测。</p>
+      <p class="method-footnote">表中三种方法对应上方经典对照演示；Python 仓库另含 Gray Edge。浏览器未加载 AI 权重，屏幕图像线性化不能替代 RAW 处理或带光源标注的规范评测。</p>
     </div></section>
 
-    <section id="about" class="about-section wrap" aria-labelledby="about-title"><div><p class="eyebrow">03 / ABOUT & NEXT</p><h2 id="about-title">保持好奇，<br>把实验做扎实。</h2><p class="about-copy">我是 zxc123-sude，关注相机 ISP 与 AWB 算法，<br class="desktop-break">具备 Python、C++ 和 ISP 基础。这里记录从零开始的项目，<br class="desktop-break">以及对光源、颜色与图像处理的持续探索。</p><a class="text-link" href="https://github.com/zxc123-sude" target="_blank" rel="noopener noreferrer">在 GitHub 上找到我 <span aria-hidden="true">↗</span></a></div><div class="roadmap"><p class="micro-label">WHAT COMES NEXT</p><ol><li><span class="roadmap-marker active" aria-hidden="true"></span><div><span class="roadmap-state">现在 · 初版</span><h3>跑通经典 AWB 方法</h3><p>实现、可视化与评测工具，建立可复现起点。</p></div></li><li><span class="roadmap-marker" aria-hidden="true"></span><div><span class="roadmap-state">下一步 · 计划</span><h3>引入真实标注数据</h3><p>核对预处理、统计角误差，整理失败样例。</p></div></li><li><span class="roadmap-marker" aria-hidden="true"></span><div><span class="roadmap-state">后续 · 计划</span><h3>C++ 实现与性能优化</h3><p>关注数值一致性、运行耗时与工程集成。</p></div></li></ol></div></section>
+    <section id="about" class="about-section wrap" aria-labelledby="about-title"><div><p class="eyebrow">03 / ABOUT & NEXT</p><h2 id="about-title">保持好奇，<br>把实验做扎实。</h2><p class="about-copy">我是 zxc123-sude，关注相机 ISP 与 AI AWB，<br class="desktop-break">具备 Python、C++ 和 ISP 基础。这里记录从零开始的项目，<br class="desktop-break">以及对光源、颜色与学习式成像的持续探索。</p><a class="text-link" href="https://github.com/zxc123-sude" target="_blank" rel="noopener noreferrer">在 GitHub 上找到我 <span aria-hidden="true">↗</span></a></div><div class="roadmap"><p class="micro-label">WHAT COMES NEXT</p><ol><li><span class="roadmap-marker active" aria-hidden="true"></span><div><span class="roadmap-state">现在 · pilot 完成</span><h3>AI 缩略图训练与基线比较</h3><p>完成真实缩略图训练，记录同协议测试结果。</p></div></li><li><span class="roadmap-marker" aria-hidden="true"></span><div><span class="roadmap-state">下一步 · 计划</span><h3>完整 RAW 与服务器实验</h3><p>完善场景隔离，扩大训练并复核完整评测划分。</p></div></li><li><span class="roadmap-marker" aria-hidden="true"></span><div><span class="roadmap-state">后续 · 计划</span><h3>ONNX / C++ 部署与优化</h3><p>验证推理一致性，测量延迟并探索 ISP 集成。</p></div></li></ol></div></section>
   </main>
 
-  <footer class="site-footer wrap"><a class="footer-brand" href="#">zxc123-sude<span>AWB & IMAGING</span></a><p>让思考可见，让实验可复现。</p><a href="https://github.com/zxc123-sude" target="_blank" rel="noopener noreferrer">GitHub ↗</a></footer>
+  <footer class="site-footer wrap"><a class="footer-brand" href="#">zxc123-sude<span>AI AWB & IMAGING</span></a><p>让思考可见，让实验可复现。</p><a href="https://github.com/zxc123-sude" target="_blank" rel="noopener noreferrer">GitHub ↗</a></footer>
   <noscript><p class="noscript-message">页面内容可正常阅读；交互图像演示需要在浏览器中启用 JavaScript。</p></noscript>
 </body>
 </html>
