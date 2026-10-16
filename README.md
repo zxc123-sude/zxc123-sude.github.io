@@ -1,16 +1,50 @@
-# zxc123-sude · AWB & Imaging
+# zxc123-sude · AI AWB & Imaging
 
-面向相机 ISP / 自动白平衡（AWB）的个人作品集，使用原生 HTML、CSS 和 JavaScript，无构建步骤、无外部字体、无第三方运行时依赖。
+面向相机 ISP / AI 自动白平衡（AWB）的个人作品集，使用原生 HTML、CSS 和 JavaScript，无构建步骤、无外部字体、无第三方运行时依赖。
 
 ## 内容
 
 - 个人方向与已具备的 Python / C++ / ISP 基础。
-- 首个项目 AWB-Lab 的初版范围、算法假设与后续计划。
-- 浏览器本地 AWB 演示：Gray World、Max RGB、Shades of Gray（p = 6）。
+- 首个项目 AWB-Lab 的 AI 训练框架、模型流程、数据分组与后续计划。
+- 浏览器本地**经典算法对照演示**：Gray World、Max RGB、Shades of Gray（p = 6），不调用 AI 模型。
 - 可切换暖光 / 冷光 / 偏绿色光的合成场景与前后对比滑块。
 - JPG / PNG / WebP 本地图片输入、RGB 增益显示、恢复合成场景。
 
-页面不宣称尚未完成的学历、工作经历、实验结果、Star 数量或 C++ 性能成绩。[AWB-Lab 源码与评测协议](https://github.com/zxc123-sude/awb-lab)包含四种经典算法：Gray World、Max RGB、Shades of Gray 和 Gray Edge；浏览器仅演示前三种统计方法。
+页面不宣称尚未完成的学历、工作经历、实验结果、Star 数量或 C++ 性能成绩。[AWB-Lab 源码](https://github.com/zxc123-sude/awb-lab)以可训练的 PyTorch AI AWB 为主项目，同时保留四种经典基线：Gray World、Max RGB、Shades of Gray 和 Gray Edge。
+
+## AI AWB 当前状态
+
+**AI 训练框架与真实缩略图 pilot 已完成；完整 RAW / 服务器实验待开展。** 交互画布仍为明确标记的经典算法演示，浏览器未加载 AI 权重，没有将经典算法包装成 AI 推理。
+
+TinyIlluminantNet 处理流程：
+
+```text
+线性 camera RGB + 有效像素 mask（4 通道）
+  → 轻量 CNN（3 层卷积）
+  → 局部正 RGB 光源 + 置信度
+  → 置信度加权汇聚，输出归一化全局 RGB 光源
+  → 绿色归一 RGB 增益
+```
+
+训练使用 cosine 光源损失；框架提供训练、验证、测试按场景或采集组隔离的接口。本次 pilot 缺少 `scene_id`，不能核查跨组重复场景，不能据此宣称完成严格场景隔离。真实实验需要与四种经典方法使用相同划分、有效像素与评测协议比较。模型输出为 RGB 光源向量，不提供 CCT 预测。
+
+[AI 模型与训练协议](https://github.com/zxc123-sude/awb-lab/blob/main/docs/AI_AWB.md)描述模型、训练数据与复现实验方法。ONNX / C++ 推理部署、性能优化和 ISP 集成均为后续计划。
+
+## 真实缩略图 pilot 结果
+
+FFCC 真实缩略图，尺寸 **32 × 48**；训练 / 验证 / 测试 **189 / 191 / 188** 张。训练 20 epochs，seed 42，CPU 2 线程；仅根据验证集选择第 18 epoch，验证集 recovery mean 为 4.3602°。188 张测试图零处理失败，同批次、相同协议比较如下：
+
+| 方法 | Recovery mean ↓ | Median ↓ | Worst 25% mean ↓ |
+| --- | ---: | ---: | ---: |
+| TinyIlluminantNet（AI） | 4.0914° | 3.3442° | 8.0677° |
+| Gray World | 4.8275° | 3.6976° | 10.4243° |
+| White Patch / Max RGB | 4.0148° | 2.2830° | 10.1903° |
+| Shades of Gray | 3.9590° | 2.3984° | 9.8163° |
+| Gray Edge | 4.5113° | 2.7529° | 11.0977° |
+
+**AI 均值 4.09°，尚未全面优于传统方法：Shades of Gray 的均值为 3.96°。** 这是单次 fold 划分的缩略图 pilot，无 `scene_id`，不是完整论文 3-fold 复现，也不是全分辨率 RAW 训练或通用性能结论。完整 RAW 与服务器实验仍待开展。
+
+[完整 pilot 报告](https://github.com/zxc123-sude/awb-lab/blob/main/reports/ffcc_pilot/README.md)保留协议、完整结果与限制。
 
 ## 本地查看
 
@@ -22,7 +56,7 @@ python -m http.server 8000
 
 在浏览器访问 `http://localhost:8000`。
 
-## 演示算法与限制
+## 浏览器经典演示与限制
 
 对浏览器解码后的 sRGB 像素，先执行 sRGB 反向传递函数，在线性 RGB 中估计各通道统计量 `e`：
 
@@ -59,4 +93,4 @@ assets/favicon.svg            本地站点图标
 
 ## 维护
 
-有真实实验后再更新项目结果，并注明数据集、预处理、划分和指标。C++ 实现仍属于后续计划，完成验证后再改变对应状态。
+后续更新 AI 模型结果时，注明数据集、camera RGB 预处理、分组划分和评测指标。当前只完成真实缩略图 pilot；完整 RAW / 服务器实验与 ONNX / C++ 部署仍为计划。浏览器若增加 AI 推理，应使用真实导出的模型并明确区分经典对照，不能给现有统计算法改名充当 AI。
