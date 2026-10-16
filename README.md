@@ -41,11 +41,11 @@ python -m http.server 8000
 ## GitHub Pages 部署
 
 1. 将本目录推送到账号 `zxc123-sude` 的公开仓库 `zxc123-sude.github.io`。
-2. 在仓库 **Settings → Pages → Build and deployment → Source** 中选择 **GitHub Actions**。
-3. 推送到 `main` 后，随附的 `.github/workflows/pages.yml` 会上传本站并部署到 GitHub Pages。
-4. 部署成功后的预期地址为 `https://zxc123-sude.github.io/`；应以 GitHub Actions 的实际部署状态为准。
+2. 在仓库 **Settings → Pages → Build and deployment → Source** 中选择 **Deploy from a branch**，分支选择 **main**，目录选择 **/ (root)** 后保存。
+3. 更新 `main` 后，GitHub 自动运行 Pages 构建和部署。
+4. 网站地址为 `https://zxc123-sude.github.io/`；应以 Pages 设置和实际部署状态为准。
 
-若实际默认分支不为 `main`，同步调整工作流的分支条件。所有资源均使用相对路径，可在文件模式或静态服务器中查看。
+若实际默认分支不为 `main`，同步调整 Pages 来源分支。所有资源均使用相对路径，可在文件模式或静态服务器中查看。
 
 ## 文件
 
@@ -55,7 +55,6 @@ styles.css                    响应式样式与减少动画设置
 app.js                        图像生成、线性处理与交互
 assets/favicon.svg            本地站点图标
 .nojekyll                     禁用 Jekyll 处理
-.github/workflows/pages.yml    GitHub Pages 部署工作流
 ```
 
 ## 维护
